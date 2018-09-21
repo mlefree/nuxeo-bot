@@ -9,13 +9,14 @@ from flask_jwt_simple import (
     JWTManager, jwt_required, get_jwt_identity
 )
 
+from src.gid.service import GidService
 from src.list.service import ListService
 from src.services.directory import ServicesDirectoryFactory
 
 # get your Fidj Secret Ids and
 ENV_PORT = int(os.environ.get("PORT", 7654))
-ENV_JWT_SECRET_KEY = str(os.environ.get("JWT_SECRET_KEY", ''))
-ENV_JWT_AUDIENCE = str(os.environ.get("JWT_AUDIENCE", ''))
+ENV_JWT_AUDIENCE = str(os.environ.get("FIDJ_APP_ID", ''))
+ENV_JWT_SECRET_KEY = str(os.environ.get("FIDJ_SECRET_KEY", ''))
 print('APP 0.0.0.0:' + str(ENV_PORT))
 
 # webapp
@@ -29,6 +30,7 @@ CORS(app)
 
 # launch your bots
 bot1 = ListService()
+bot2 = GidService()
 ServicesDirectoryFactory.get().launchAllServices()
 
 
