@@ -943,7 +943,7 @@ class GidService(ServiceAbstract):
     """
 
     def __init__(self):
-        super().__init__("listService", "list intelligent tools", "params??", False)
+        super().__init__("gidService", "gid intelligent tools", "params??", False)
         pass
 
     def isParamsValid(self, params) -> bool:
