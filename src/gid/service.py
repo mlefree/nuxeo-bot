@@ -937,9 +937,9 @@ def download(self, arguments):
 # In[ ]:
 
 
-class ListService(ServiceAbstract):
+class GidService(ServiceAbstract):
     """
-        List example service.py
+        GidService
     """
 
     def __init__(self):
