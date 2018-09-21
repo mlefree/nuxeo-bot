@@ -953,8 +953,10 @@ class GidService(ServiceAbstract):
         return True
 
     def launch(self, params) -> (str, int):
-        output = 'List Service TODO: ' + str(params)
-        outputStatus = status.HTTP_400_BAD_REQUEST
+        output = {"age": 24, "isEmployed": true, "name": "Sarah"} #'List Service TODO: ' + str(params)
+        #outputStatus = status.HTTP_400_BAD_REQUEST
+        outputStatus = status.HTTP_200_OK
+        return output, outputStatus
 
         if params['data']:
             max = -1
