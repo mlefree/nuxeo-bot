@@ -2,18 +2,14 @@
 
 based on https://github.com/revolutech/revolubot
 
+### Install
     # done with : python3 -m venv env-bot
     source ../env-bot/bin/activate
     pip3 install -r requirements.txt
     
     # pip freeze > requirements.txt
     
-### What is this repository for? ###
-
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
+### Launch
 
 
     nohup gunicorn app:app &
@@ -21,9 +17,9 @@ based on https://github.com/revolutech/revolubot
     nohup gunicorn web:app --log-file=- --reload &
     
    
-To set security :
+### Variables to set
 
-* JWT_SECRET_KEY = 
-* JWT_AUDIENCE = 
+* FIDJ_APP_ID = 
+* FIDJ_SECRET_KEY = 
     
 go into [BOT@7654](http://localhost:7654)
