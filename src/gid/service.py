@@ -973,7 +973,7 @@ class GidService(ServiceAbstract):
 
         if 'data' in params:
             response = googleimagesdownload()
-            absPaths, output = response.download({'keywords': params['data']})
+            absPaths, output = response.download({'keywords': params['data'], "limit": 20})
 
             if output:
                 outputStatus = status.HTTP_200_OK
