@@ -574,6 +574,13 @@ class googleimagesdownload:
     def download_image(self, image_url, image_format, main_directory, dir_name, count, print_urls, socket_timeout,
                        prefix,
                        print_size, no_numbering):
+
+        download_status = ''
+        download_message = ''
+        return_image_name = ''
+        absolute_path = ''
+        path = ''
+
         if print_urls:
             print("Image URL: " + image_url)
         try:
@@ -675,7 +682,7 @@ class googleimagesdownload:
             return_image_name = ''
             absolute_path = ''
 
-        return download_status, download_message, return_image_name, absolute_path
+        return download_status, download_message, return_image_name, absolute_path, path
 
     # Finding 'Next Image' from the given raw page
     def _get_next_item(self, s):
@@ -703,6 +710,7 @@ class googleimagesdownload:
     def _get_all_items(self, page, main_directory, dir_name, limit, arguments):
         items = []
         abs_path = []
+        rel_paths = []
         errorCount = 0
         i = 0
         count = 1
@@ -722,7 +730,7 @@ class googleimagesdownload:
                     print("\nImage Metadata: " + str(object))
 
                 # download the images
-                download_status, download_message, return_image_name, absolute_path = self.download_image(
+                download_status, download_message, return_image_name, absolute_path, relative_path = self.download_image(
                     object['image_link'], object['image_format'], main_directory, dir_name, count,
                     arguments['print_urls'],
                     arguments['socket_timeout'], arguments['prefix'], arguments['print_size'],
@@ -741,6 +749,7 @@ class googleimagesdownload:
                     object['image_filename'] = return_image_name
                     items.append(object)  # Append all the links in the list named 'Links'
                     abs_path.append(absolute_path)
+                    rel_paths.append(relative_path)
                 else:
                     errorCount += 1
 
@@ -754,15 +763,21 @@ class googleimagesdownload:
             print("\n\nUnfortunately all " + str(
                 limit) + " could not be downloaded because some images were not downloadable. " + str(
                 count - 1) + " is all we got for this search filter!")
-        return items, errorCount, abs_path
+        return items, errorCount, abs_path, rel_paths
 
     # Bulk Download
     def download(self, arguments):
+
+
+        paths = {}
+        downloadPaths = {}
+
         # for input coming from other python files
         if __name__ != "__main__":
             for arg in args_list:
                 if arg not in arguments:
                     arguments[arg] = None
+
 
         ######Initialization and Validation of user arguments
         if arguments['keywords']:
@@ -820,7 +835,7 @@ class googleimagesdownload:
                   'https://github.com/hardikvasa/google-images-download#examples'
                   '\n\nexiting!\n'
                   '-------------------------------')
-            sys.exit()
+            return paths, downloadPaths
 
         # If this argument is present, set the custom output directory
         if arguments['output_directory']:
@@ -834,7 +849,6 @@ class googleimagesdownload:
             os.environ["https_proxy"] = arguments['proxy']
             ######Initialization Complete
 
-        paths = {}
         for pky in prefix_keywords:
             for sky in suffix_keywords:  # 1.for every suffix keywords
                 i = 0
@@ -853,56 +867,65 @@ class googleimagesdownload:
                         dir_name = search_term + (
                             '-' + arguments['color'] if arguments['color'] else '')  # sub-directory
 
-                    self.create_directories(main_directory, dir_name,
-                                            arguments['thumbnail'])  # create directories in OS
-
-                    params = self.build_url_parameters(arguments)  # building URL with params
-
-                    url = self.build_search_url(search_term, params, arguments['url'], arguments['similar_images'],
-                                                arguments['specific_site'],
-                                                arguments['safe_search'])  # building main search url
-
-                    if limit < 101:
-                        raw_html = self.download_page(url)  # download page
+                    if os.path.exists(os.path.join(main_directory, dir_name)):
+                        paths[pky + search_keyword[i] + sky] = ['already done']
+                        downloadPaths[pky + search_keyword[i] + sky] = ['already done']
                     else:
-                        raw_html = self.download_extended_page(url, arguments['chromedriver'])
 
-                    print("Starting Download...")
-                    items, errorCount, abs_path = self._get_all_items(raw_html, main_directory, dir_name, limit,
-                                                                      arguments)  # get all image items and download images
-                    paths[pky + search_keyword[i] + sky] = abs_path
+                        self.create_directories(main_directory, dir_name,
+                                                arguments['thumbnail'])  # create directories in OS
 
-                    # dumps into a json file
-                    if arguments['extract_metadata']:
-                        try:
-                            if not os.path.exists("logs"):
-                                os.makedirs("logs")
-                        except OSError as e:
-                            print(e)
-                        json_file = open("logs/" + search_keyword[i] + ".json", "w")
-                        json.dump(items, json_file, indent=4, sort_keys=True)
-                        json_file.close()
+                        params = self.build_url_parameters(arguments)  # building URL with params
 
-                    # Related images
-                    if arguments['related_images']:
-                        print("\nGetting list of related keywords...this may take a few moments")
-                        tabs = self.get_all_tabs(raw_html)
-                        for key, value in tabs.items():
-                            final_search_term = (search_term + " - " + key)
-                            print("\nNow Downloading - " + final_search_term)
-                            if limit < 101:
-                                new_raw_html = self.download_page(value)  # download page
-                            else:
-                                new_raw_html = self.download_extended_page(value, arguments['chromedriver'])
-                            self.create_directories(main_directory, final_search_term, arguments['thumbnail'])
-                            self._get_all_items(new_raw_html, main_directory, search_term + " - " + key, limit,
-                                                arguments)
+                        url = self.build_search_url(search_term, params, arguments['url'], arguments['similar_images'],
+                                                    arguments['specific_site'],
+                                                    arguments['safe_search'])  # building main search url
+
+                        if limit < 101:
+                            raw_html = self.download_page(url)  # download page
+                        else:
+                            raw_html = self.download_extended_page(url, arguments['chromedriver'])
+
+                        print("Starting Download...")
+                        items, errorCount, abs_path, rel_paths = self._get_all_items(raw_html, main_directory, dir_name, limit,
+                                                                          arguments)  # get all image items and download images
+                        paths[pky + search_keyword[i] + sky] = abs_path
+                        downloadPaths[pky + search_keyword[i] + sky] = rel_paths
+
+                        # dumps into a json file
+                        if arguments['extract_metadata']:
+                            try:
+                                if not os.path.exists("logs"):
+                                    os.makedirs("logs")
+                            except OSError as e:
+                                print(e)
+                            json_file = open("logs/" + search_keyword[i] + ".json", "w")
+                            json.dump(items, json_file, indent=4, sort_keys=True)
+                            json_file.close()
+
+                        # Related images
+                        if arguments['related_images']:
+                            print("\nGetting list of related keywords...this may take a few moments")
+                            tabs = self.get_all_tabs(raw_html)
+                            for key, value in tabs.items():
+                                final_search_term = (search_term + " - " + key)
+                                print("\nNow Downloading - " + final_search_term)
+                                if limit < 101:
+                                    new_raw_html = self.download_page(value)  # download page
+                                else:
+                                    new_raw_html = self.download_extended_page(value, arguments['chromedriver'])
+                                self.create_directories(main_directory, final_search_term, arguments['thumbnail'])
+                                self._get_all_items(new_raw_html, main_directory, search_term + " - " + key, limit,
+                                                    arguments)
+
+                        print("\nErrors: " + str(errorCount) + "\n")
 
                     i += 1
-                    print("\nErrors: " + str(errorCount) + "\n")
+
         if arguments['print_paths']:
             print(paths)
-        return paths
+
+        return paths, downloadPaths
 
 
 # ------------- Main Program -------------#
@@ -950,7 +973,7 @@ class GidService(ServiceAbstract):
 
         if 'data' in params:
             response = googleimagesdownload()
-            output = response.download({'keywords': params['data']})
+            absPaths, output = response.download({'keywords': params['data']})
 
             if output:
                 outputStatus = status.HTTP_200_OK

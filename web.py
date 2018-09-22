@@ -1,10 +1,10 @@
 import json
 import os
 
-from flask import request, url_for
+from flask import request, url_for, send_from_directory
+from flask_accept import accept
 from flask_api import FlaskAPI
 from flask_cors import CORS
-from flask_accept import accept
 from flask_jwt_simple import (
     JWTManager, jwt_required, get_jwt_identity
 )
@@ -102,6 +102,12 @@ def post_service(title):
     output, outputStatus = ServicesDirectoryFactory.get().launchService(title, formData)
 
     return {'result': output}, outputStatus
+
+
+@app.route('/downloads/<path:filename>', methods=['GET', 'POST'])
+def get_downloads(filename):
+    downloads = os.path.join(app.root_path, 'downloads')
+    return send_from_directory(directory=downloads, filename=filename)
 
 
 # Usefull but need protection ;
