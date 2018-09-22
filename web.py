@@ -95,7 +95,7 @@ def post_service(title):
     Test with curl -H "Authorization: Bearer YOUR_JWT_ID_TOKEN" -X POST http://localhost:7654/api/services/:title
     """
     roles = get_jwt_identity()
-    if 'Test Role' not in roles:
+    if 'Nuxeo' not in roles:
         return {'result': ''}, 403
 
     formData = request.data
