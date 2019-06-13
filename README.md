@@ -1,20 +1,24 @@
 # README #
 
-based on https://github.com/revolutech/revolubot
+> nuxeo bot server
 
-### Install
-    # done with : python3 -m venv env-bot
-    source ../env-bot/bin/activate
-    pip3 install -r requirements.txt
-    
-    # pip freeze > requirements.txt
+based on https://github.com/revolutech/revolubot (fidj.ovh extended bot)
+
+## Install
+
+```bash
+python3 -m venv .env/
+# set this env as your main interpreter
+pip3 install --upgrade -r requirements.txt
+```
+
     
 ### Launch
 
 
-    nohup gunicorn app:app &
-    
-    nohup gunicorn web:app --log-file=- --reload &
+```bash
+nohup gunicorn web:app --log-file=- --reload &
+```
     
    
 ### Variables to set
