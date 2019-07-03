@@ -7,7 +7,7 @@ based on https://github.com/revolutech/revolubot (fidj.ovh extended bot)
 ## Install
 
 ```bash
-python3 -m venv .env/
+python3 -m venv .venv/
 # set this env as your main interpreter
 pip3 install --upgrade -r requirements.txt
 ```

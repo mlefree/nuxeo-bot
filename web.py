@@ -11,13 +11,15 @@ from flask_jwt_simple import (
 
 from src.gid.service import GidService
 from src.list.service import ListService
+from src.nuxeo.service import NuxeoService
 from src.services.directory import ServicesDirectoryFactory
 
-# get your Fidj Secret Ids and
-ENV_PORT = int(os.environ.get("PORT", 7654))
-ENV_JWT_AUDIENCE = str(os.environ.get("FIDJ_APP_ID", ''))
+# get your Fidj Secret Ids
+ENV_PORT = int(os.environ.get('PORT', 7654))
+ENV_JWT_AUDIENCE = str(os.environ.get('FIDJ_APP_ID', ''))
 ENV_JWT_SECRET_KEY = str(os.environ.get("FIDJ_SECRET_KEY", ''))
-print('APP 0.0.0.0:' + str(ENV_PORT))
+
+print('APP 0.0.0.0:' + str(ENV_PORT) + ' - ' + str(ENV_JWT_AUDIENCE))
 
 # webapp
 app = FlaskAPI(__name__, template_folder='templates', static_folder='static')
@@ -31,6 +33,7 @@ CORS(app)
 # launch your bots
 bot1 = ListService()
 bot2 = GidService()
+bot3 = NuxeoService()
 ServicesDirectoryFactory.get().launchAllServices()
 
 
