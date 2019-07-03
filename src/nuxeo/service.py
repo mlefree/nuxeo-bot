@@ -1,9 +1,8 @@
 import os
 
 from flask_api import status
-
+import json
 from src.services.interfaces import ServiceAbstract
-
 from nuxeo.client import Nuxeo
 
 ENV_NUXEO_PWD = str(os.environ.get("NUXEO_PWD", 'Administrator'))
@@ -54,7 +53,7 @@ class NuxeoService(ServiceAbstract):
             # Get results
             entries = search['entries']
 
-            output = str(entries)
+            output = json.dumps(entries)
 
             if output:
                 outputStatus = status.HTTP_200_OK
