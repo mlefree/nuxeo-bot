@@ -1,7 +1,7 @@
 import os
-
-from flask_api import status
 import json
+import sys
+from flask_api import status
 from src.services.interfaces import ServiceAbstract
 from nuxeo.client import Nuxeo
 
@@ -41,23 +41,27 @@ class NuxeoService(ServiceAbstract):
         if body['instance'] and body['instance']['url'] and body['instance']['user'] and body['instance']['pwd'] and \
                 body['query']:
 
-            # output = None
-            nuxeo = Nuxeo(
-                host=body['instance']['url'],
-                auth=(body['instance']['user'], body['instance']['pwd'])
-            )
+            try:
+                # output = None
+                nuxeo = Nuxeo(
+                    host=body['instance']['url'],
+                    auth=(body['instance']['user'], body['instance']['pwd'])
+                )
 
-            # Make the request
-            search = nuxeo.client.query(body['query'])
+                # Make the request
+                search = nuxeo.client.query(body['query'])
 
-            # Get results
-            entries = search['entries']
+                # Get results
+                entries = search['entries']
+                output = json.dumps(entries)
+                if output:
+                    outputStatus = status.HTTP_200_OK
+                else:
+                    outputStatus = status.HTTP_204_NO_CONTENT
 
-            output = json.dumps(entries)
-
-            if output:
-                outputStatus = status.HTTP_200_OK
-            else:
-                outputStatus = status.HTTP_204_NO_CONTENT
+            except:
+                print("Oops!", sys.exc_info()[0], "occured.")
+                output = sys.exc_info()[0]
+                outputStatus = status.HTTP_500_INTERNAL_SERVER_ERROR
 
         return output, outputStatus
