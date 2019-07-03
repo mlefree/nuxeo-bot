@@ -54,7 +54,7 @@ class NuxeoService(ServiceAbstract):
             # Get results
             entries = search['entries']
 
-            output = 'List entries found: ' + str(entries)
+            output = str(entries)
 
             if output:
                 outputStatus = status.HTTP_200_OK
