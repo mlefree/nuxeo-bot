@@ -7,7 +7,7 @@ from src.services.interfaces import ServiceAbstract
 
 from nuxeo.client import Nuxeo
 
-ENV_NUXEO_PWD = str(os.environ.get("NUXEO_PWD", ''))
+ENV_NUXEO_PWD = str(os.environ.get("NUXEO_PWD", 'Administrator'))
 
 
 class NuxeoService(ServiceAbstract):
@@ -16,7 +16,7 @@ class NuxeoService(ServiceAbstract):
     """
 
     def __init__(self):
-        super().__init__("nuxeoService", "nuxeo intelligent tools", "params??", False)
+        super().__init__("nuxeo", "nuxeo intelligent tools", "params??", False)
         pass
 
     def isParamsValid(self, params) -> bool:
@@ -25,34 +25,37 @@ class NuxeoService(ServiceAbstract):
 
         return True
 
-    def launch(self, params) -> (str, int):
-        output = 'List Service TODO: ' + str(params)
+    def launch(self, body) -> (str, int):
+        output = 'Service TODO: ' + str(body)
         outputStatus = status.HTTP_400_BAD_REQUEST
 
-        nuxeo = Nuxeo(
-            host='https://mleprevost.cloud.nuxeo.com/nuxeo/',
-            auth=('Administrator', ENV_NUXEO_PWD)
-        )
+        # params should looks like :
+        # {
+        #   "instance":
+        #   {
+        #       "url": "https://.../nuxeo",
+        #       "user": "Administrator",
+        #       "pwd":  "xxx"
+        #   },
+        #   "query": "SELECT * FROM Document WHERE ..."
+        #  }
 
-        # Build a query using its UID
-        nxql = ("SELECT * FROM Document WHERE ecm:ancestorId = '{uid}'"
-                "   AND ecm:primaryType IN ('File', 'Picture')"
-                "   AND ecm:currentLifeCycleState != 'deleted'")
-        query = nxql.format(uid=ws.uid)
 
-        # Make the request
-        search = nuxeo.client.query(query, params={'properties': '*'})
+        if body['instance'] & body['instance']['url'] & body['instance']['user'] & body['instance']['pwd'] & body['query']:
 
-        # Get results
-        entries = search['entries']
+            # output = None
+            nuxeo = Nuxeo(
+                host=body['instance']['url'],
+                auth=(body['instance']['user'], body['instance']['pwd'])
+            )
 
-        if params['data']:
-            max = -1
-            output = None
-            for el in params['data']:
-                if len(el['comments']) > max:
-                    max = len(el['comments'])
-                    output = 'List entries found: ' + entries
+            # Make the request
+            search = nuxeo.client.query(body['query'])
+
+            # Get results
+            entries = search['entries']
+
+            output = 'List entries found: ' + entries
 
             if output:
                 outputStatus = status.HTTP_200_OK

@@ -4,6 +4,10 @@
 
 based on https://github.com/revolutech/revolubot (fidj.ovh extended bot)
 
+TODO :
+- explain as restlet https://www.dropbox.com/s/2j44aygutgiepn5/Screenshot%202019-07-03%2014.30.46.png?dl=0
+- sss
+
 ## Install
 
 ```bash
