@@ -61,7 +61,7 @@ class NuxeoService(ServiceAbstract):
 
             except:
                 print("Oops!", sys.exc_info()[0], "occured.")
-                output = sys.exc_info()[0]
+                output = str(sys.exc_info()[0])
                 outputStatus = status.HTTP_500_INTERNAL_SERVER_ERROR
 
         return output, outputStatus
