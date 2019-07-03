@@ -1,4 +1,3 @@
-
 import os
 
 from flask_api import status
@@ -40,8 +39,8 @@ class NuxeoService(ServiceAbstract):
         #   "query": "SELECT * FROM Document WHERE ..."
         #  }
 
-
-        if body['instance'] & body['instance']['url'] & body['instance']['user'] & body['instance']['pwd'] & body['query']:
+        if body['instance'] and body['instance']['url'] and body['instance']['user'] and body['instance']['pwd'] and \
+                body['query']:
 
             # output = None
             nuxeo = Nuxeo(
