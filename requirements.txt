@@ -39,7 +39,7 @@ Markdown==2.6.9
 MarkupSafe==1.0
 mccabe==0.6.1
 multidict==3.3.0
-numpy==1.15.2
+numpy==1.22.0
 nuxeo==2.2.1
 pew==1.1.0
 pipenv==8.2.7
